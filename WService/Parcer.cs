@@ -1652,27 +1652,35 @@ namespace WService
 
                     for (int i = row_num + 2; i < total_rows; i++)
                     {
+                       
 
-                        table_date = DateTime.ParseExact(ws.GetCaculateValue(i, column_num).ToString().TrimEnd().TrimStart(), format1, provider);
+                       
 
-                        if (table_date >= start_date && table_date < user_date)
+                            table_date = DateTime.ParseExact(ws.GetCaculateValue(i, column_num).ToString().TrimEnd().TrimStart(), format1, provider);
+
+                            if (table_date >= start_date && table_date < user_date)
+                            {
+                                new_row++;
+                                
+                                ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, ws.FirstColumn], true);
+
+                            }
+                        
+
+                        MainWindow.StartWindow1.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
                         {
-                            new_row++;
-
-                            //  ws.Copy(ws.Rows[i], ws2.Rows[new_row], true);
-
-                            ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, ws.FirstColumn], true);
-
-                        }
-
-
+                            MainWindow.StartWindow1.label1.Content = command.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0] + " (" + i.ToString() + " из " + total_rows + " )";
+                        }));
                     }
 
+                    
 
+                    if (prm[4].Contains("\\") == false)
+                        workbook2.SaveToFile(file_temp[0] + prm[4] + ".xlsx", ExcelVersion.Version2010);
+                    else
+                        workbook2.SaveToFile(prm[4] + ".xlsx", ExcelVersion.Version2010);
 
-                    workbook2.SaveToFile(file_temp[0] + prm[4] + ".xlsx", ExcelVersion.Version2010);
-
-
+                    workbook2.Dispose(); workbook.Dispose();
                     Console.WriteLine("Обработка " + command + " прошло успешно.");
 
                 }
@@ -1764,7 +1772,10 @@ namespace WService
 
                     }
 
+                    if(prm[4].Contains("\\")==false)
                     workbook2.SaveToFile(file_temp[0] + prm[4] + ".xlsx", ExcelVersion.Version2010);
+                    else
+                    workbook2.SaveToFile(prm[4] + ".xlsx", ExcelVersion.Version2010);
 
                     workbook2.Dispose(); workbook.Dispose();
 
@@ -1991,6 +2002,10 @@ namespace WService
 
             }
 
+            MainWindow.StartWindow1.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+            {
+                MainWindow.StartWindow1.label1.Content = "Все операции завершились успешно.";
+            }));
 
         }
 
