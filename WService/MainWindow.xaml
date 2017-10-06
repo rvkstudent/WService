@@ -1,0 +1,21 @@
+﻿<Window x:Class="WService.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WService"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="750" Width="1525">
+    <Grid>
+        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="329" Margin="10,32,0,0" VerticalAlignment="Top" Width="251"/>
+        <ListBox x:Name="listBox1" HorizontalAlignment="Left" Height="247" Margin="298,32,0,0" VerticalAlignment="Top" Width="571" SelectionChanged="listBox1_SelectionChanged" MouseDoubleClick="listBox1_MouseDoubleClick"/>
+        <ListBox x:Name="listBox2" HorizontalAlignment="Left" Height="247" Margin="885,31,0,0" VerticalAlignment="Top" Width="613"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" Text="Список доступных скриптов" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="298,10,0,0" TextWrapping="Wrap" Text="Список &quot;Загрузки&quot;" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" Margin="885,11,0,0" TextWrapping="Wrap" Text="Список &quot;В обработку&quot;" VerticalAlignment="Top"/>
+        <Label x:Name="label" Content="" HorizontalAlignment="Left" Margin="298,292,0,0" VerticalAlignment="Top" Width="456"/>
+        <Button x:Name="button" Content="Очистить" HorizontalAlignment="Left" Margin="885,292,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Button x:Name="button1" Content="Запустить скрипт" HorizontalAlignment="Left" Margin="10,374,0,0" VerticalAlignment="Top" Width="251" Click="button1_Click"/>
+
+    </Grid>
+</Window>
