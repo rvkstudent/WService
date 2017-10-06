@@ -556,6 +556,149 @@ namespace WService
 
                 }
 
+                if (com.Equals("УдалитьПоДату", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
+                {
+
+                    string worksheet_name = "";
+                    int worksheet_num = 0;
+
+
+                    string filename = prm[0];
+
+                    files.TryGetValue(prm[0], out file_temp);
+                    filename = file_temp[0] + file_temp[1];
+
+                    if (prm[1] != "" && prm[1] != null)
+                    {
+                        if (!Int32.TryParse(prm[1], out worksheet_num))
+                            worksheet_name = prm[1];
+
+                    }
+
+                    Workbook workbook = new Workbook();
+
+                    workbook.LoadFromFile(filename);
+
+                    Worksheet ws = workbook.Worksheets[worksheet_num - 1];
+
+                    int total_rows = ws.Rows.Count();
+                    int total_columns = ws.Columns.Count();
+                                        
+                    int first = ws.FirstVisibleRow;
+
+                    int row_num = GetColumnByName(file_temp, prm[1], prm[2])[0];
+                    int column_num = GetColumnByName(file_temp, prm[1], prm[2])[1];
+
+                    DateTime user_date = DateTime.ParseExact(prm[3] + " 00:00:00", format, provider);
+                   
+                    DateTime table_date;
+
+                 
+                    total_rows = ws.Rows.Count();
+                    total_columns = ws.Columns.Count();
+                    first = ws.FirstVisibleRow;
+
+                    row_num = GetColumnByName(file_temp, prm[1], prm[2])[0] - 1;
+                    column_num = GetColumnByName(file_temp, prm[1], prm[2])[1];
+                    
+                    var format1 = "MM/dd/yyyy 00:00:00";
+
+                    for (int i = row_num + 2; i < ws.LastRow; i++)
+                    {
+
+                        table_date = DateTime.ParseExact(ws.GetCaculateValue(i, column_num).ToString().TrimEnd().TrimStart(), format1, provider);
+
+                        if (table_date >= user_date)
+                        {
+
+                            ws.DeleteRow(i);
+                            i--;
+                        }
+
+
+                    }
+                    
+
+                    workbook.Save();
+                    
+                    Console.WriteLine("Обработка " + command + " прошло успешно.");
+
+                }
+
+                if (com.Equals("УдалитьНоль", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
+                {
+
+                    string worksheet_name = "";
+                    int worksheet_num = 0;
+
+                    int column_num = 1;
+
+                    string filename = prm[0];
+
+                    files.TryGetValue(prm[0], out file_temp);
+                    filename = file_temp[0] + file_temp[1];
+
+                    if (prm[2] != "" && prm[2] != null)
+                        Int32.TryParse(prm[2], out column_num);
+
+
+                    if (prm[1] != "" && prm[1] != null)
+                    {
+
+                        try
+                        {
+                            worksheet_num = Int32.Parse(prm[1]);
+
+                        }
+                        catch (FormatException)
+                        {
+                            worksheet_name = prm[1];
+                        }
+
+
+                    }
+
+                    Workbook workbook = new Workbook();
+
+                    workbook.LoadFromFile(filename);
+
+                    Worksheet ws = workbook.Worksheets[worksheet_num - 1];
+
+                    var strings = ws.FindAllString(prm[2], false, false);
+
+                    if (strings.Count()>0)
+                    {
+                        var column = strings[0].Column;
+                        var row = strings[0].Row+1;
+                        var range = ws.Range[row, column];
+
+                        int last_row = ws.LastRow;
+                       
+
+                        for (int j = row; j <= ws.LastRow; j++)
+                        {
+                            
+                            if(ws.GetCaculateValue(j,column).ToString().Equals("0"))
+                            { 
+                            ws.DeleteRow(j);
+                            j--;
+                          
+                            }
+                        }
+                                              
+
+                    }
+
+                   
+                    workbook.Save();
+
+                    workbook.Dispose();
+
+
+                    Console.WriteLine("Обработка " + command + " прошло успешно.");
+
+                }
+
                 if (com.Equals("УдалитьУволен", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
                 {
 
@@ -611,6 +754,7 @@ namespace WService
                     Console.WriteLine("Обработка " + command + " прошло успешно.");
 
                 }
+
                 if (com.Equals("УдалитьСтолбец", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
                 {
 
@@ -663,6 +807,7 @@ namespace WService
                     Console.WriteLine("Обработка " + command + " прошло успешно.");
 
                 }
+
                 if (com.Equals("ДобавитьСтроку", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
                 {
 
