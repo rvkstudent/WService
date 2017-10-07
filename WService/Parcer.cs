@@ -43,7 +43,7 @@ namespace WService
 
         }
 
-        private List<int> GetColumnByName(string filename, string list, string name)
+        static List<int> GetColumnByName(string filename, string list, string name)
         {
             int list_num = 1;
             List<int> col = new List<int>();
@@ -80,7 +80,7 @@ namespace WService
 
         }
 
-        private string GetFilename(string file_directory, string str)
+        static string GetFilename(string file_directory, string str)
         {
             List<String> Files = new List<string>();
             Files = Directory.GetFiles(file_directory, "*.xlsx").ToList();
@@ -128,6 +128,9 @@ namespace WService
 
         private string GetList(List<string> file_dir, int list_num)
         {
+
+
+
             string name = "";
 
             Workbook workbook = new Workbook();
@@ -148,9 +151,72 @@ namespace WService
 
 
         }
-               
 
-        public void ParceXL(List<string> commands)
+        static public void ScanScript(List<string> commands)
+        {
+            string com = "";
+            string[] prm = new string[10];
+            int total_count = 0;
+            int available_count = 0;
+
+            foreach (var command in commands)
+            {
+                com = command.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0];
+
+                if (com.Equals("Файл", StringComparison.InvariantCultureIgnoreCase)) 
+                {
+                    total_count++;
+                }
+            }
+
+                MainWindow.StartWindow1.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+                {
+                    MainWindow.StartWindow1.pg1.Minimum = 0;
+                    MainWindow.StartWindow1.pg1.Maximum = total_count;
+                }));
+
+            foreach (var command in commands)
+            {
+                
+                com = command.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0];
+               
+                prm = (command.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1].Split(")".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0]).Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                               
+                if (com.Equals("Файл", StringComparison.InvariantCultureIgnoreCase)) // добавляем строку до столбца по номеру или до слолбца по названию
+                {
+
+                    MainWindow.StartWindow1.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+                    {
+                        MainWindow.StartWindow1.pg1.Value = MainWindow.StartWindow1.pg1.Value + 1;
+                        MainWindow.StartWindow1.label1.Content = "Проверяю " + command.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0] + " " + prm[2];
+                    }));
+                                        
+
+                    if (prm[2].Contains("xlsx"))
+                    {
+                        if (System.IO.File.Exists(prm[1]+ prm[2]))
+                        {
+                            available_count++;
+                        }
+                    }
+                    else
+                    {
+                        if (GetFilename(prm[1].TrimEnd().TrimStart(), prm[2].TrimEnd().TrimStart()).Equals("")==false)
+                         available_count++;                                            
+
+                    }
+
+
+                }
+            }
+
+            MainWindow.StartWindow1.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+            {              
+                MainWindow.StartWindow1.label1.Content = "Доступно " + available_count + " из " + total_count;
+            }));
+
+        }
+            public void ParceXL(List<string> commands)
         {
 
             string format = "dd.MM.yyyy h:mm:ss";
@@ -306,13 +372,13 @@ namespace WService
                             ws.Range[i, first_column].Style = ws.Range[i, first_column + 1].Style;
 
 
-                            Regex myReg = new Regex("\\D\\d+");
+                            Regex myReg = new Regex("[A-Z]\\d+");
                             MatchCollection matches = myReg.Matches(formula_str);
                             foreach (var match in matches)
                             {
                                 Regex myReg2 = new Regex("\\d+");
                                 int addr_number = Convert.ToInt32(myReg2.Match(match.ToString()).ToString()) + 1;
-                                Regex myReg3 = new Regex("\\D");
+                                Regex myReg3 = new Regex("[A-Z]");
                                 string addr_letter = myReg3.Match(match.ToString()).ToString();
                                 formula_str = formula_str.Replace(match.ToString(), addr_letter + addr_number.ToString());
                                 ;
@@ -1984,10 +2050,30 @@ namespace WService
 
                             for (int j = 1; j <= ws.LastColumn; j++)
                             {
+                                string formula_str = ws.GetCaculateValue(i, j).ToString();                                                              
 
-                                ws2.SetValue(new_row, j, ws.GetCaculateValue(i, j).ToString());
+                                if (new_row < i)
+                                { 
+                                    Regex myReg = new Regex("[A-Z]\\d+");
+                                    MatchCollection matches = myReg.Matches(formula_str);
+                                    if (matches.Count > 5)
 
-                                //ws2.Rows[new_row].Style = ws.Rows[i].Style;
+                                         {
+                                        ;
+                                    }
+                                    foreach (var match in matches)
+                                    {
+                                        Regex myReg2 = new Regex("\\d+");
+                                        int addr_number = Convert.ToInt32(myReg2.Match(match.ToString()).ToString()) - (i-new_row);
+                                        Regex myReg3 = new Regex("[A-Z]");
+                                        string addr_letter = myReg3.Match(match.ToString()).ToString();
+                                        formula_str = formula_str.Replace(match.ToString(), addr_letter + addr_number.ToString());
+                                    
+
+                                    }
+                                }
+                                ws2.SetValue(new_row, j, formula_str);
+
                             }
                             //ws.Copy(ws.Rows[i-1], ws2.Range[new_row, 1], true);
                             workbook2.SaveToFile(prm[3] + ws.GetCaculateValue(i - 1, column_num).ToString().Replace(".", "").Replace(" ", "") + ".xlsx", ExcelVersion.Version2010);

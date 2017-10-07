@@ -111,5 +111,41 @@ namespace WService
            
 
         }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+
+           
+
+        }
+
+        private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
+            List<string> lst = new List<string>();
+            string line;
+            
+            lst.Clear();
+            
+
+                // Read the file and display it line by line.  
+                System.IO.StreamReader file =
+                    new System.IO.StreamReader(listBox.SelectedItem.ToString(), Encoding.GetEncoding(1251));
+
+                while ((line = file.ReadLine()) != null)
+                    lst.Add(line);
+
+
+            
+            var task = new Task(new Action(() => Parcer.ScanScript(lst)));
+
+            task.Start();
+
+
+
+            file.Close();
+                        
+        }
     }
 }
