@@ -136,8 +136,8 @@ namespace WService
                 while ((line = file.ReadLine()) != null)
                     lst.Add(line);
 
+            listBox3.ItemsSource = lst;
 
-            
             var task = new Task(new Action(() => Parcer.ScanScript(lst)));
 
             task.Start();

@@ -1987,8 +1987,7 @@ namespace WService
 
 
                     Console.WriteLine("Обработка " + command + " прошло успешно.");
-
-
+                    
 
                 }
 
@@ -2031,18 +2030,19 @@ namespace WService
                             ws2 = workbook2.Worksheets[0];
                             ws2.Name = ws.Name;
                             new_row = 1;
-                            ws.Copy(ws.Rows[row_num], ws2.Range[new_row, 1], true);
+                            ws.Copy(ws.Rows[row_num], ws2.Range[new_row, 1, new_row, total_columns], true);
                             new_row++;
-                            ws.Copy(ws.Rows[i - 2], ws2.Range[new_row, 1], true);
+                            ws.Copy(ws.Rows[i - 2], ws2.Range[new_row, 1, new_row, total_columns], true);
                             new_row++;
-                            ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, 1], true);
+                            ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, 1, new_row, total_columns], true);
                             new_row++;
                             i++;
                             series = true;
                         }
                         if (ws.GetCaculateValue(i, column_num).ToString().TrimEnd().TrimStart().ToUpper().Equals(ws.GetCaculateValue(i - 1, column_num).ToString().TrimEnd().TrimStart().ToUpper()) == true && series == true)
                         {
-                            ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, 1], true);
+                            ws.Copy(ws.Rows[i - 1], ws2.Range[new_row, 1, new_row, total_columns], true);
+
                             new_row++;
                         }
                         if (ws.GetCaculateValue(i, column_num).ToString().TrimEnd().TrimStart().ToUpper().Equals(ws.GetCaculateValue(i - 1, column_num).ToString().TrimEnd().TrimStart().ToUpper()) == false && series == true)
@@ -2056,11 +2056,7 @@ namespace WService
                                 { 
                                     Regex myReg = new Regex("[A-Z]\\d+");
                                     MatchCollection matches = myReg.Matches(formula_str);
-                                    if (matches.Count > 5)
-
-                                         {
-                                        ;
-                                    }
+                                   
                                     foreach (var match in matches)
                                     {
                                         Regex myReg2 = new Regex("\\d+");
@@ -2074,8 +2070,13 @@ namespace WService
                                 }
                                 ws2.SetValue(new_row, j, formula_str);
 
+                                ws2.Range[new_row, j].Style.KnownColor = ws.Range[i, j].Style.KnownColor;
+
+                                if (ws.Range[i, j].Style.NumberFormat != null)
+                                    ws2.Range[new_row, j].Style.NumberFormat = ws.Range[i, j].Style.NumberFormat;
                             }
-                            //ws.Copy(ws.Rows[i-1], ws2.Range[new_row, 1], true);
+                            
+
                             workbook2.SaveToFile(prm[3] + ws.GetCaculateValue(i - 1, column_num).ToString().Replace(".", "").Replace(" ", "") + ".xlsx", ExcelVersion.Version2010);
                             series = false;
                             workbook2.Dispose();
