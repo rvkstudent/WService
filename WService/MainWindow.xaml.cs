@@ -1,23 +1,12 @@
-﻿using Spire.Xls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
 
 namespace WService
 {
@@ -25,7 +14,7 @@ namespace WService
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     /// 
-    
+
 
     public partial class MainWindow : Window
     {
@@ -102,7 +91,7 @@ namespace WService
 
             file.Close();
 
-            Parcer parcer = new Parcer();
+            Parcer parcer = new Parcer(lst);
 
             var task = new Task(new Action(() => parcer.ParceXL(lst)));
 
